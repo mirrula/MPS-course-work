@@ -1,0 +1,185 @@
+   1               		.file	"keyboard.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  15               	.Ltext0:
+  16               	.global	init_keyboard
+  18               	init_keyboard:
+  19               	.LFB4:
+  20               	.LM1:
+  21               	/* prologue: function */
+  22               	/* frame size = 0 */
+  23               	/* stack size = 0 */
+  24               	.L__stack_usage = 0
+  25               	.LM2:
+  26 0000 87B3      		in r24,55-32
+  27 0002 8F60      		ori r24,lo8(15)
+  28 0004 87BB      		out 55-32,r24
+  29               	.LM3:
+  30 0006 84B3      		in r24,52-32
+  31 0008 807F      		andi r24,lo8(-16)
+  32 000a 84BB      		out 52-32,r24
+  33               	/* epilogue start */
+  34               	.LM4:
+  35 000c 0895      		ret
+  36               	.LFE4:
+  38               	.global	scan_key
+  40               	scan_key:
+  41               	.LFB5:
+  42               	.LM5:
+  43               	/* prologue: function */
+  44               	/* frame size = 0 */
+  45               	/* stack size = 0 */
+  46               	.L__stack_usage = 0
+  47               	.LBB6:
+  48               	.LM6:
+  49 000e 41E0      		ldi r20,lo8(1)
+  50 0010 50E0      		ldi r21,hi8(1)
+  51               	.L8:
+  52               	.LBE6:
+  53               	.LM7:
+  54 0012 85B3      		in r24,53-32
+  55 0014 8F60      		ori r24,lo8(15)
+  56 0016 85BB      		out 53-32,r24
+  57               	.LVL0:
+  58               	.LM8:
+  59 0018 E0E0      		ldi r30,lo8(0)
+  60 001a F0E0      		ldi r31,hi8(0)
+  61               	.LVL1:
+  62               	.L7:
+  63               	.LBB11:
+  64               	.LM9:
+  65 001c CA01      		movw r24,r20
+  66 001e 0E2E      		mov r0,r30
+  67 0020 00C0      		rjmp 2f
+  68 0022 880F      	1:	lsl r24
+  69 0024 991F      		rol r25
+  70 0026 0A94      	2:	dec r0
+  71 0028 02F4      		brpl 1b
+  72 002a 8095      		com r24
+  73 002c 88BB      		out 56-32,r24
+  74               	.LVL2:
+  75               	.LM10:
+  76 002e 80E0      		ldi r24,lo8(0)
+  77 0030 90E0      		ldi r25,hi8(0)
+  78               	.LVL3:
+  79               	.L6:
+  80               	.LBB7:
+  81               	.LM11:
+  82 0032 23B3      		in r18,51-32
+  83 0034 30E0      		ldi r19,lo8(0)
+  84 0036 082E      		mov r0,r24
+  85 0038 00C0      		rjmp 2f
+  86 003a 3595      	1:	asr r19
+  87 003c 2795      		ror r18
+  88 003e 0A94      	2:	dec r0
+  89 0040 02F4      		brpl 1b
+  90 0042 20FD      		sbrc r18,0
+  91 0044 00C0      		rjmp .L3
+  92 0046 21E0      		ldi r18,lo8(1)
+  93 0048 30E0      		ldi r19,hi8(1)
+  94 004a 082E      		mov r0,r24
+  95 004c 00C0      		rjmp 2f
+  96 004e 220F      	1:	lsl r18
+  97 0050 331F      		rol r19
+  98 0052 0A94      	2:	dec r0
+  99 0054 02F4      		brpl 1b
+ 100 0056 00C0      		rjmp .L4
+ 101               	.L5:
+ 102               	.LVL4:
+ 103               	.LBB8:
+ 104               	.LBB9:
+ 105               	.LM12:
+ 106 0058 4FE7      		 ldi r20,lo8(79999)
+ 107 005a 58E3      	    ldi r21,hi8(79999)
+ 108 005c 61E0      	    ldi r22,hlo8(79999)
+ 109 005e 4150      	    1:subi r20,1
+ 110 0060 5040      	    sbci r21,0
+ 111 0062 6040      	    sbci r22,0
+ 112 0064 01F4      	    brne 1b
+ 113 0066 00C0      		rjmp .
+ 114 0068 0000      		nop
+ 115               	.LVL5:
+ 116               	.L4:
+ 117               	.LBE9:
+ 118               	.LBE8:
+ 119               	.LM13:
+ 120 006a 43B3      		in r20,51-32
+ 121 006c 50E0      		ldi r21,lo8(0)
+ 122 006e 4223      		and r20,r18
+ 123 0070 5323      		and r21,r19
+ 124 0072 4115      		cp r20,__zero_reg__
+ 125 0074 5105      		cpc r21,__zero_reg__
+ 126 0076 01F0      		breq .L5
+ 127               	.LM14:
+ 128 0078 EE0F      		lsl r30
+ 129 007a FF1F      		rol r31
+ 130 007c EE0F      		lsl r30
+ 131 007e FF1F      		rol r31
+ 132 0080 E80F      		add r30,r24
+ 133 0082 F91F      		adc r31,r25
+ 134 0084 E050      		subi r30,lo8(-(keys))
+ 135 0086 F040      		sbci r31,hi8(-(keys))
+ 136               	.LBE7:
+ 137               	.LBE11:
+ 138               	.LM15:
+ 139 0088 8081      		ld r24,Z
+ 140               	/* epilogue start */
+ 141 008a 0895      		ret
+ 142               	.L3:
+ 143               	.LBB12:
+ 144               	.LBB10:
+ 145               	.LM16:
+ 146 008c 0196      		adiw r24,1
+ 147               	.LVL6:
+ 148 008e 8430      		cpi r24,4
+ 149 0090 9105      		cpc r25,__zero_reg__
+ 150 0092 01F4      		brne .L6
+ 151               	.LBE10:
+ 152               	.LM17:
+ 153 0094 3196      		adiw r30,1
+ 154               	.LVL7:
+ 155 0096 E430      		cpi r30,4
+ 156 0098 F105      		cpc r31,__zero_reg__
+ 157 009a 01F0      		breq .+2
+ 158 009c 00C0      		rjmp .L7
+ 159 009e 00C0      		rjmp .L8
+ 160               	.LBE12:
+ 161               	.LFE5:
+ 163               	.global	keys
+ 164               		.data
+ 167               	keys:
+ 168 0000 37        		.byte	55
+ 169 0001 38        		.byte	56
+ 170 0002 39        		.byte	57
+ 171 0003 2F        		.byte	47
+ 172 0004 34        		.byte	52
+ 173 0005 35        		.byte	53
+ 174 0006 36        		.byte	54
+ 175 0007 2A        		.byte	42
+ 176 0008 31        		.byte	49
+ 177 0009 32        		.byte	50
+ 178 000a 33        		.byte	51
+ 179 000b 2D        		.byte	45
+ 180 000c 43        		.byte	67
+ 181 000d 30        		.byte	48
+ 182 000e 3D        		.byte	61
+ 183 000f 2B        		.byte	43
+ 216               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 keyboard.c
+C:\Users\mirru\AppData\Local\Temp\ccSpcKH5.s:2      *ABS*:0000003f __SREG__
+C:\Users\mirru\AppData\Local\Temp\ccSpcKH5.s:3      *ABS*:0000003e __SP_H__
+C:\Users\mirru\AppData\Local\Temp\ccSpcKH5.s:4      *ABS*:0000003d __SP_L__
+C:\Users\mirru\AppData\Local\Temp\ccSpcKH5.s:5      *ABS*:00000034 __CCP__
+C:\Users\mirru\AppData\Local\Temp\ccSpcKH5.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\mirru\AppData\Local\Temp\ccSpcKH5.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\mirru\AppData\Local\Temp\ccSpcKH5.s:18     .text:00000000 init_keyboard
+C:\Users\mirru\AppData\Local\Temp\ccSpcKH5.s:40     .text:0000000e scan_key
+C:\Users\mirru\AppData\Local\Temp\ccSpcKH5.s:167    .data:00000000 keys
+
+UNDEFINED SYMBOLS
+__do_copy_data

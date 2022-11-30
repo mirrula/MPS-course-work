@@ -1,0 +1,39 @@
+   1               		.file	"main.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  15               	.Ltext0:
+  16               	.global	main
+  18               	main:
+  19               	.LFB0:
+  20               	.LM1:
+  21               	.LVL0:
+  22               	/* prologue: function */
+  23               	/* frame size = 0 */
+  24               	/* stack size = 0 */
+  25               	.L__stack_usage = 0
+  26               	.LM2:
+  27 0000 00D0      		rcall init_calculator
+  28               	.LVL1:
+  29               	.LM3:
+  30 0002 80E0      		ldi r24,lo8(0)
+  31 0004 90E0      		ldi r25,hi8(0)
+  32               	/* epilogue start */
+  33 0006 0895      		ret
+  34               	.LFE0:
+  60               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\mirru\AppData\Local\Temp\ccyfIzZK.s:2      *ABS*:0000003f __SREG__
+C:\Users\mirru\AppData\Local\Temp\ccyfIzZK.s:3      *ABS*:0000003e __SP_H__
+C:\Users\mirru\AppData\Local\Temp\ccyfIzZK.s:4      *ABS*:0000003d __SP_L__
+C:\Users\mirru\AppData\Local\Temp\ccyfIzZK.s:5      *ABS*:00000034 __CCP__
+C:\Users\mirru\AppData\Local\Temp\ccyfIzZK.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\mirru\AppData\Local\Temp\ccyfIzZK.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\mirru\AppData\Local\Temp\ccyfIzZK.s:18     .text:00000000 main
+
+UNDEFINED SYMBOLS
+init_calculator

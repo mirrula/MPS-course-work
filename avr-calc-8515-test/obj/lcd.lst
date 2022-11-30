@@ -1,0 +1,210 @@
+   1               		.file	"lcd.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  15               	.Ltext0:
+  16               	.global	trigger
+  18               	trigger:
+  19               	.LFB7:
+  20               	.LM1:
+  21               	/* prologue: function */
+  22               	/* frame size = 0 */
+  23               	/* stack size = 0 */
+  24               	.L__stack_usage = 0
+  25               	.LM2:
+  26 0000 AD9A      		sbi 53-32,5
+  27               	.LVL0:
+  28               	.LBB4:
+  29               	.LBB5:
+  30               	.LM3:
+  31 0002 8FE2      		 ldi r24,lo8(29999)
+  32 0004 95E7      	    ldi r25,hi8(29999)
+  33 0006 0197      	    1:sbiw r24,1
+  34 0008 01F4      	    brne 1b
+  35 000a 00C0      		rjmp .
+  36 000c 0000      		nop
+  37               	.LBE5:
+  38               	.LBE4:
+  39               	.LM4:
+  40 000e AD98      		cbi 53-32,5
+  41               	/* epilogue start */
+  42               	.LM5:
+  43 0010 0895      		ret
+  44               	.LFE7:
+  46               	.global	send_data
+  48               	send_data:
+  49               	.LFB6:
+  50               	.LM6:
+  51               	.LVL1:
+  52               	/* prologue: function */
+  53               	/* frame size = 0 */
+  54               	/* stack size = 0 */
+  55               	.L__stack_usage = 0
+  56               	.LM7:
+  57 0012 AC9A      		sbi 53-32,4
+  58               	.LM8:
+  59 0014 82BB      		out 50-32,r24
+  60               	.LM9:
+  61 0016 00D0      		rcall trigger
+  62               	.LVL2:
+  63               	/* epilogue start */
+  64               	.LM10:
+  65 0018 0895      		ret
+  66               	.LFE6:
+  68               	.global	send_command
+  70               	send_command:
+  71               	.LFB5:
+  72               	.LM11:
+  73               	.LVL3:
+  74               	/* prologue: function */
+  75               	/* frame size = 0 */
+  76               	/* stack size = 0 */
+  77               	.L__stack_usage = 0
+  78               	.LM12:
+  79 001a AC98      		cbi 53-32,4
+  80               	.LM13:
+  81 001c 82BB      		out 50-32,r24
+  82               	.LM14:
+  83 001e 00D0      		rcall trigger
+  84               	.LVL4:
+  85               	/* epilogue start */
+  86               	.LM15:
+  87 0020 0895      		ret
+  88               	.LFE5:
+  90               	.global	init_display
+  92               	init_display:
+  93               	.LFB4:
+  94               	.LM16:
+  95               	/* prologue: function */
+  96               	/* frame size = 0 */
+  97               	/* stack size = 0 */
+  98               	.L__stack_usage = 0
+  99               	.LM17:
+ 100 0022 84B3      		in r24,52-32
+ 101 0024 8063      		ori r24,lo8(48)
+ 102 0026 84BB      		out 52-32,r24
+ 103               	.LM18:
+ 104 0028 8FEF      		ldi r24,lo8(-1)
+ 105 002a 81BB      		out 49-32,r24
+ 106               	.LM19:
+ 107 002c 81E0      		ldi r24,lo8(1)
+ 108 002e 00D0      		rcall send_command
+ 109               	.LM20:
+ 110 0030 8CE0      		ldi r24,lo8(12)
+ 111 0032 00D0      		rcall send_command
+ 112               	.LM21:
+ 113 0034 88E3      		ldi r24,lo8(56)
+ 114 0036 00D0      		rcall send_command
+ 115               	.LM22:
+ 116 0038 86E0      		ldi r24,lo8(6)
+ 117 003a 00D0      		rcall send_command
+ 118               	.LM23:
+ 119 003c 80E8      		ldi r24,lo8(-128)
+ 120 003e 00D0      		rcall send_command
+ 121               	/* epilogue start */
+ 122               	.LM24:
+ 123 0040 0895      		ret
+ 124               	.LFE4:
+ 126               	.global	send_string
+ 128               	send_string:
+ 129               	.LFB8:
+ 130               	.LM25:
+ 131               	.LVL5:
+ 132 0042 EF92      		push r14
+ 133 0044 FF92      		push r15
+ 134 0046 CF93      		push r28
+ 135 0048 DF93      		push r29
+ 136               	/* prologue: function */
+ 137               	/* frame size = 0 */
+ 138               	/* stack size = 4 */
+ 139               	.L__stack_usage = 4
+ 140               	.LM26:
+ 141 004a E82E      		mov r14,r24
+ 142 004c E701      		movw r28,r14
+ 143 004e 7E01      		movw r14,r28
+ 144 0050 F92E      		mov r15,r25
+ 145 0052 E701      		movw r28,r14
+ 146               	.LM27:
+ 147 0054 00C0      		rjmp .L6
+ 148               	.LVL6:
+ 149               	.L7:
+ 150               	.LM28:
+ 151 0056 00D0      		rcall send_data
+ 152               	.L6:
+ 153               	.LM29:
+ 154 0058 8991      		ld r24,Y+
+ 155 005a 8823      		tst r24
+ 156 005c 01F4      		brne .L7
+ 157               	/* epilogue start */
+ 158               	.LM30:
+ 159 005e DF91      		pop r29
+ 160 0060 CF91      		pop r28
+ 161 0062 FF90      		pop r15
+ 162 0064 EF90      		pop r14
+ 163 0066 0895      		ret
+ 164               	.LFE8:
+ 166               	.global	move_to
+ 168               	move_to:
+ 169               	.LFB9:
+ 170               	.LM31:
+ 171               	.LVL7:
+ 172               	/* prologue: function */
+ 173               	/* frame size = 0 */
+ 174               	/* stack size = 0 */
+ 175               	.L__stack_usage = 0
+ 176               	.LM32:
+ 177 0068 0097      		sbiw r24,0
+ 178 006a 01F0      		breq .L10
+ 179 006c 80EC      		ldi r24,lo8(-64)
+ 180               	.LVL8:
+ 181 006e 00C0      		rjmp .L9
+ 182               	.LVL9:
+ 183               	.L10:
+ 184 0070 80E8      		ldi r24,lo8(-128)
+ 185               	.LVL10:
+ 186               	.L9:
+ 187               	.LM33:
+ 188 0072 860F      		add r24,r22
+ 189               	.LVL11:
+ 190 0074 00D0      		rcall send_command
+ 191               	.LVL12:
+ 192               	/* epilogue start */
+ 193               	.LM34:
+ 194 0076 0895      		ret
+ 195               	.LFE9:
+ 197               	.global	clear
+ 199               	clear:
+ 200               	.LFB10:
+ 201               	.LM35:
+ 202               	/* prologue: function */
+ 203               	/* frame size = 0 */
+ 204               	/* stack size = 0 */
+ 205               	.L__stack_usage = 0
+ 206               	.LM36:
+ 207 0078 81E0      		ldi r24,lo8(1)
+ 208 007a 00D0      		rcall send_command
+ 209               	/* epilogue start */
+ 210               	.LM37:
+ 211 007c 0895      		ret
+ 212               	.LFE10:
+ 286               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 lcd.c
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:2      *ABS*:0000003f __SREG__
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:3      *ABS*:0000003e __SP_H__
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:4      *ABS*:0000003d __SP_L__
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:5      *ABS*:00000034 __CCP__
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:18     .text:00000000 trigger
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:48     .text:00000012 send_data
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:70     .text:0000001a send_command
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:92     .text:00000022 init_display
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:128    .text:00000042 send_string
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:168    .text:00000068 move_to
+C:\Users\mirru\AppData\Local\Temp\ccibIh1U.s:199    .text:00000078 clear
+
+NO UNDEFINED SYMBOLS
