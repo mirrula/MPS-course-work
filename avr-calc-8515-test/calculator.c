@@ -14,7 +14,7 @@ static char line[] = "                "; 	// Single line, 16 characters long.
 static char buffer[16];
 static char overflow[] = "   Overflow   ";
 
-void decide(unsigned char);
+void decide(unsigned char, bool*, int*);
 void send_digit(unsigned char);
 
 void init_calculator() {
@@ -67,8 +67,16 @@ void send_digit(unsigned char digit) {
 }
 
 void run() {
+	bool *is_dec_p;
+	bool is_decimal = 0;
+	is_dec_p = &is_decimal;
+
+	int *paw_p;
+	int paw = 1;
+	paw_p = &paw;
+
     while (1) {
-        decide(scan_key());
+        decide(scan_key(), is_dec_p, paw_p);
     }
 }
 
@@ -86,19 +94,11 @@ void reset() {
 4 - Result displayed.
 */
 
-void decide(unsigned char key) {
+void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
     // Check if it is a digit.
-    if ((key >= '0' && key <= '9') || key == '.')
+    if (key >= '0' && key <= '9')
     {
-		unsigned char digit;
-		bool f = 0; //флаг (0 - целая часть, 1 - дробная часть)
-		int p = 1; //порядок цифры после запятой
-
-		if (key >= '0' && key <= '9') {
-        	digit = key - '0'; // '2' --> 2
-		}
-
-		else if (key == '.') {f = 1; state=1;}
+		unsigned char digit = key - '0'; // '2' --> 2
 
         switch (state) {
         case 0:
@@ -107,23 +107,24 @@ void decide(unsigned char key) {
                 state = 1;
             }
         case 1:
-			if (f == 0) {
-	            if (count == 14) return; // You cannot fillup the screen with a single operand.
-	            a = a * 10 + digit; // append to a.
-	            if (a > 0) {
-	                send_data(key);
-	                count++;
-	            }
+            if (count == 14) return; // You cannot fillup the screen with a single operand.
+
+			if (*is_dec_p == 0) {
+				//send_data('0');
+            	a = a * 10 + digit;		// append to a
+			} 
+
+			if (*is_dec_p == 1) {
+				//send_data('1');
+				a = (a * 10 + digit) / 10;		// append to a
+				*paw_p++;
 			}
-			if (f == 1) {
-	            if (count == 14) return; // You cannot fillup the screen with a single operand.
-	            a = a + digit/(10*p); // append to a.
-	            if (a > 0) {
-	                send_data(key);
-	                count++;
-	            }
-				p++;
-			}
+
+
+            if (a > 0) {
+                send_data(key);
+                count++;
+            }
 
             break;
         case 2:
@@ -144,12 +145,17 @@ void decide(unsigned char key) {
                 move_to(0, 0);
                 a = b = op = count = 0;
                 state = 1;
-                decide(key); // Recursively capture digit.
+                decide(key, is_dec_p, paw_p); // Recursively capture digit.
                 return;
             }
             break;
         }
     } 
+	
+	else if (key == '.') {
+		*is_dec_p = 1;
+		send_data(key);
+	}
 
 	else {
         switch (key) {
