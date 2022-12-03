@@ -1,9 +1,10 @@
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdbool.h>
 
 #include "lcd.h"
 
-void trigger(void);
+bool on_flag;
 
 //Функция инициализации lcd контроллера hd44780
 void init_display(){
@@ -17,17 +18,19 @@ void init_display(){
 	send_command(0x38); // 2 line mode.
 	_delay_ms(5); 
 	send_command(0x38); // 2 line mode.
-	_delay_us( 100 ); 
+	_delay_us(100); 
 	send_command(0x38); // 2 line mode.	
 
-	send_command(0x0F);
+	send_command(0x0F);	// LCD ON, cursor ON
 	_delay_ms(10);
-	send_command(0x01); 
+	send_command(0x01); // Clear display screen
 	_delay_ms(10);
 	send_command(0x81); 
 	_delay_ms(10);
 
 	PORTC |= (1<<PC6); // Set PC6 (E).
+
+	on_flag = 1;
 }
 
 //Функция записи байта (символа) команды в lcd контроллер
@@ -75,4 +78,27 @@ void clear(){
     send_command(0x01);
 	PORTC |=(1<<PC4); // Set PC4 (RS).
 }
+
+void disp_on_off(){
+	if (on_flag == 1) {
+		PORTC &=~(1<<PC4); // Reset PC4 (RS).
+   		send_command(0x08);
+		PORTC |=(1<<PC4); // Set PC4 (RS).
+		on_flag = 0;
+	}
+	else {
+		PORTC &=~(1<<PC4); // Reset PC4 (RS).
+
+		send_command(0x0F);	// LCD ON, cursor ON
+		_delay_ms(10);
+		send_command(0x01); // Clear display screen
+		_delay_ms(10);
+		send_command(0x81); 
+		_delay_ms(10);
+
+		PORTC |=(1<<PC4); // Set PC4 (RS).
+		on_flag = 1;
+	}
+}
+
 

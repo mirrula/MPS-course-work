@@ -9,7 +9,10 @@
 	void send_string(const char*);
 
 	void clear(void);
+	void disp_on_off(void);
 
 	void move_to(unsigned char, unsigned char);
+	void trigger(void);
+
 
 #endif
