@@ -3,7 +3,6 @@
 #include "calculator.h"
 #include "keyboard.h"
 #include "lcd.h"
-//#include <math.h>
 #include <stdbool.h>
 
 float r, a, b; 								// a and b are operands, r is the result.
@@ -110,7 +109,7 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 
         case 0:
             if (digit) {
-                clear(); 						// Clear screen if input is non-zero.
+                //clear(); 						// Clear screen if input is non-zero.
                 state = 1;
             }
 
@@ -121,9 +120,16 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
             	a = a * 10 + digit;				// append to a
 			} 
 
-			if (*is_dec_p == 1) {
-				a = (a * 10 + digit) / 10;		// append to a
-				*paw_p++;
+			if (*is_dec_p == 1) {				
+
+				int d = 1;
+				for (int i=0; i<*paw_p; i++) {
+					d = d * 10;
+				}
+
+				a = (a * d + digit) / d;
+
+				*paw_p = *paw_p + 1;
 			}
 
             send_data(key);
@@ -132,8 +138,6 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 
         case 2:
             if (digit) {
-				*is_dec_p = 0;
-				*paw_p = 1;
 				state = 3;
 			}
 
@@ -143,8 +147,14 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 			} 
 
 			if (*is_dec_p == 1) {
-				b = (b * 10 + digit) / 10;		// append to b
-				*paw_p++;
+				int d = 1;
+				for (int i=0; i<*paw_p; i++) {
+					d = d * 10;
+				}
+
+				b = (b * d + digit) / d;
+
+				*paw_p = *paw_p + 1;
 			}
 
             send_data(key);
@@ -177,6 +187,10 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 	}
 
 	else {
+		
+		*is_dec_p = 0;
+		*paw_p = 1;		
+
         switch (key) {
         case '/':
         case '*':
@@ -186,7 +200,6 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
         case 'm':
 		case 'v':
 		case 'r':
-
             switch (state) {
 
             case 2:
@@ -219,6 +232,7 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
             }
 
             op = key;
+
             break;
 
         case '=':
