@@ -37,7 +37,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = main.o lcd.o keyboard.o calculator.o 
+OBJECTS = main.o lcd.o keyboard.o calculator.o uart.o 
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
@@ -56,6 +56,9 @@ keyboard.o: ../keyboard.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 calculator.o: ../calculator.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+uart.o: ../uart.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 ##Link

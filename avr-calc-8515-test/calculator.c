@@ -4,6 +4,8 @@
 #include "keyboard.h"
 #include "lcd.h"
 #include <stdbool.h>
+#include <stdio.h>
+#include "uart.h"
 
 float r, a, b; 								// a and b are operands, r is the result.
 float ans;
@@ -24,11 +26,18 @@ void init_calculator() {
     run();
 }
 
+void uart() {
+	UsartInit();
+	char uart_ans[64];
+	dtostrf(ans, 9, 5, uart_ans);
+	Transmit(uart_ans);
+}
+
 double calculate(float m, char operator, float n) {
     switch (operator) {
     case '+':
         return r = m + n;
-    case '-':
+   /* case '-':
         return r = m - n;
     case '*':
         return r = m * n;
@@ -40,11 +49,7 @@ double calculate(float m, char operator, float n) {
     case 'm':
         return r = (int)m % (int)n;
     case 'v':
-        return r = (int)m / (int)n;
-    case 'r':
-		r = 1;
-		for (int i=0; i<n; i++) r = r * m;
-        return r;
+        return r = (int)m / (int)n;*/
 
     }
     return r = m;
@@ -120,7 +125,7 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
             	a = a * 10 + digit;				// append to a
 			} 
 
-			if (*is_dec_p == 1) {				
+		/*	if (*is_dec_p == 1) {				
 
 				int d = 1;
 				for (int i=0; i<*paw_p; i++) {
@@ -131,7 +136,7 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 
 				*paw_p = *paw_p + 1;
 			}
-
+*/
             send_data(key);
             count++;
             break;
@@ -146,7 +151,7 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
             	b = b * 10 + digit;				// append to b
 			} 
 
-			if (*is_dec_p == 1) {
+		/*	if (*is_dec_p == 1) {
 				int d = 1;
 				for (int i=0; i<*paw_p; i++) {
 					d = d * 10;
@@ -155,7 +160,7 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 				b = (b * d + digit) / d;
 
 				*paw_p = *paw_p + 1;
-			}
+			}*/
 
             send_data(key);
             count++;
@@ -192,14 +197,13 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 		*paw_p = 1;		
 
         switch (key) {
-        case '/':
-        case '*':
+        /*case '/':
+        case '*': */
         case '+':
-        case '-':
+        /*case '-':
         case 'p':
         case 'm':
-		case 'v':
-		case 'r':
+		case 'v':*/
             switch (state) {
 
             case 2:
@@ -243,7 +247,7 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
             }
             break;
 
-        case 'C': // "C" button.
+       /* case 'C': // "C" button.
             //if (state != 0) 
 			reset();
             break;
@@ -261,6 +265,10 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 
 		case 'O':
 			on_off();
+			break;*/
+
+		case 'u':
+			uart();
 			break;
         }
     }

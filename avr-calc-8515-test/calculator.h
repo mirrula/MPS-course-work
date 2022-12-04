@@ -12,5 +12,6 @@
 	void decide(unsigned char, bool*, int*);
 	void send_digit(unsigned char);
 	void on_off(void);
+	void uart(void);
 
 #endif

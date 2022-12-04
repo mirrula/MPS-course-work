@@ -18,7 +18,7 @@ void init_display(){
 	send_command(0x38); // 2 line mode.
 	_delay_ms(5); 
 	send_command(0x38); // 2 line mode.
-	_delay_us(100); 
+	_delay_ms(100); 
 	send_command(0x38); // 2 line mode.	
 
 	send_command(0x0F);	// LCD ON, cursor ON
