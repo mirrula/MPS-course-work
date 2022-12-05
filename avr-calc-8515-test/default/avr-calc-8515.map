@@ -260,14 +260,14 @@ LOAD c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5
                 0x00000296                scan_key
  .text          0x0000032a      0x770 calculator.o
                 0x0000032a                uart
-                0x0000038a                calculate
-                0x0000044e                show_result
-                0x000004b2                send_digit
-                0x000004b8                reset
-                0x0000050c                on_off
-                0x00000510                decide
-                0x00000a46                run
-                0x00000a7e                init_calculator
+                0x00000388                calculate
+                0x0000044c                show_result
+                0x000004b0                send_digit
+                0x000004b6                reset
+                0x0000050a                on_off
+                0x0000050e                decide
+                0x00000a44                run
+                0x00000a7c                init_calculator
  .text          0x00000a9a       0x44 uart.o
                 0x00000a9a                UsartInit
                 0x00000aa8                Transmit

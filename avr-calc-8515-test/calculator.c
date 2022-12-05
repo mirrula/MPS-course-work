@@ -20,13 +20,13 @@ void init_calculator() {
     _delay_ms(500);
     init_display();
     init_keyboard();
+	UsartInit();
 
     reset();
     run();
 }
 
 void uart() {
-	UsartInit();
 	char uart_ans[64];
 	dtostrf(ans, 9, 5, uart_ans);
 	Transmit(uart_ans);
