@@ -6,18 +6,30 @@
 #include "lcd.h"
 #include "uart.h"
 
+enum exp_states
+{
+    start_disp,		//0 Displaying banner.
+	a_input,		//1 Input first operand, a.
+	op_input,		//2 Middle Operator pressed, op.
+	b_input,		//3 Input second operand, b.
+	result_disp,	//4 Result displayed
+};
+
 float r, a, b; 								// a and b are operands, r is the result.
-float ans;
+float ans;									// for "ANS" operator
 int count; 									// Number of characters displaying on first line.
-unsigned short state; 						// Calculator and Monitor state.
+enum exp_states state; 						// Calculator and Monitor state.
 unsigned char op; 							// Operator: [/, *, +, -, ...].
 
 static char line[] = "                "; 	// Single line, 16 characters long.
 static char buffer[16];
 static char overflow[] = "   Overflow   ";
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+
 void init_calculator() {
     _delay_ms(500);
+
     init_display();
     init_keyboard();
 	UsartInit();
@@ -28,7 +40,7 @@ void init_calculator() {
 
 void uart() {
 	char uart_ans[64];
-	dtostrf(ans, 9, 5, uart_ans);
+	dtostrf(ans, 9, 5, uart_ans);	//float -> char* (ans -> uart_ans)
 	Transmit(uart_ans);
 }
 
@@ -42,12 +54,11 @@ double calculate(float m, char operator, float n) {
         return r = m * n;
     case '/':
         return r = m / n;
-
-    case 'p':
+    case 'p'://%
         return r = m * n / 100;
-    case 'm':
+    case 'm'://mod
         return r = (int)m % (int)n;
-    case 'v':
+    case 'v'://div
         return r = (int)m / (int)n;
 
     }
@@ -55,17 +66,17 @@ double calculate(float m, char operator, float n) {
 }
 
 void show_result() {
-    move_to(0, 1);			//начало нижней строки
+    move_to(0, 1);			//bottom line start
     send_string("A=");
-    char *data = buffer;
-
+    
+	char* data = buffer;
     if (r <= 999999999999)
-        dtostrf(r, 9, 5, buffer);	//данные с плавающей точкой -> массив символов
+        dtostrf(r, 9, 5, buffer);	//float -> char* (r -> buffer)
     else 
 		data = overflow;
-
     send_string(data);
-    state = 4;
+
+    state = result_disp;
 }
 
 void send_digit(unsigned char digit) {
@@ -89,18 +100,9 @@ void run() {
 void reset() {
     clear();
     move_to(0, 0);		//начало верхней строки
-    r = a = b = op = state = count = 0;
+    r = a = b = op = count = 0;
+	state = start_disp;
 }
-
-void on_off(){ disp_on_off(); }
-
-/* States:
-0 - Displaying banner.
-1 - Input first operand, a.
-2 - Middle Operator pressed, op.
-3 - Input second operand, b.
-4 - Result displayed.
-*/
 
 void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
     
@@ -111,13 +113,12 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 
         switch (state) {
 
-        case 0:
+        case start_disp:
             if (digit) {
-                //clear(); 						// Clear screen if input is non-zero.
-                state = 1;
+                state = a_input;
             }
 
-        case 1:
+        case a_input:
             if (count == 14) return; 			// You cannot fillup the screen with a single operand.
 
 			if (*is_dec_p == 0) {
@@ -140,12 +141,12 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
             count++;
             break;
 
-        case 2:
+        case op_input:
             if (digit) {
-				state = 3;
+				state = b_input;
 			}
 
-        case 3:
+        case b_input:
 			if (*is_dec_p == 0) {
             	b = b * 10 + digit;				// append to b
 			} 
@@ -165,7 +166,7 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
             count++;
             break;
 
-        case 4:
+        case result_disp:
             if (digit) {
                 line[0] = ' ';
                 line[1] = ' ';
@@ -175,7 +176,7 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 
                 move_to(0, 0);
                 a = b = op = count = 0;
-                state = 1;
+                state = a_input;
 
                 decide(key, is_dec_p, paw_p); 	// Recursively capture digit.
                 return;
@@ -205,21 +206,21 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 		case 'v':
             switch (state) {
 
-            case 2:
+            case op_input:
                 move_to(0,0); 		// Modify the operand displayed.
 
-            case 1:
+            case a_input:
                 send_data(key);
                 count++;
-                state = 2;
+                state = op_input;
                 break;
 
-            case 3:
+            case b_input:
                 calculate(a, op, b);
                 show_result();
 				ans = calculate(a, op, b);
 
-            case 4:
+            case result_disp:
                 move_to(0, 0);
                 line[0] = 'A'; 		// 'A' represents current result.
                 line[1] = key; 		// Operator of the operation.
@@ -229,7 +230,7 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
                 count = 2;
                 a = r; 				// Put result into a.
                 b = 0; 				// Clear b.
-                state = 2;
+                state = op_input;
 
                 break;
             }
@@ -239,7 +240,7 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
             break;
 
         case '=':
-            if(state == 3){
+            if(state == b_input){
                 calculate(a, op, b);
                 show_result();
 				ans = calculate(a, op, b);
@@ -247,14 +248,13 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
             break;
 
         case 'C': // "C" button.
-            //if (state != 0) 
 			reset();
             break;
 
         case 'A': // "ANS" button.
 			send_data('A');
 			b = ans;
-			state = 3;
+			state = b_input;
             break;
 
         case 'D': // "DEL" button.
@@ -262,11 +262,11 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 			send_data(' ');
             break;
 
-		case 'O':
-			on_off();
+		case 'O':// "ON/OFF" button.
+			disp_on_off();
 			break;
 
-		case 'u':
+		case 'u':// "uart" button.
 			uart();
 			break;
         }

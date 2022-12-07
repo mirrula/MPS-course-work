@@ -11,7 +11,7 @@
 	void show_result(void);
 	void decide(unsigned char, bool*, int*);
 	void send_digit(unsigned char);
-	void on_off(void);
 	void uart(void);
+	float add_digit(float, unsigned char, bool*, int*);
 
 #endif

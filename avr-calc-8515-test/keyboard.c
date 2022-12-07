@@ -18,7 +18,8 @@ void init_keyboard() {
 unsigned char scan_key() {
     while (1) {
         PORTD |= 0xFC;
-        for(int i = 0;i<4;i++){
+        
+		for(int i = 0;i<4;i++){
             PORTC = ~(1 << i);
             for(int j = 2;j < 8;j++){
                 if(bit_is_clear(PIND, j)){
@@ -27,6 +28,7 @@ unsigned char scan_key() {
                 }
             }
         }
+
     }
 }
 
