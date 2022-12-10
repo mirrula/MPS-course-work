@@ -6,7 +6,6 @@
 
 bool on_flag;
 
-//Функция инициализации lcd контроллера hd44780
 void init_display(){
     DDRC |= (1<<PC4)|(1<<PC6); 	// PC 4 is output for RS, 6 is output for Enable.
     DDRA = 0xFF; 				// PA 0-7 is 8 bit data output bus.
@@ -33,22 +32,18 @@ void init_display(){
 	on_flag = 1;
 }
 
-//Функция записи байта (символа) команды в lcd контроллер
 void send_command(unsigned char command){
     PORTA = command;
     trigger();
 	_delay_us( 40 );
 }
 
-//Функция записи байта (символа) данных в lcd контроллер
 void send_data(unsigned char data){
     PORTA = data;
     trigger();
 	_delay_us( 40 );
 }
 
-//Функция генерирующая строб на линии E.
-//По этому стробу производится запись команды/данных или чтение.
 void trigger(){
     PORTC |= (1<<PC6); // Set PC6 (E).
     _delay_us(1);
@@ -56,13 +51,11 @@ void trigger(){
 	_delay_us(1);
 }
 
-//Функция вывода строки
+//
 void send_string(const char *str){
     while(*str) send_data(*str++); // Send characters one by one.
 }
 
-//Функция изменения текущей позиции курсора,
-//x — номер символа в строке, y — номер строки
 void move_to(unsigned char x, unsigned char y){
 	unsigned char address = x;
 	if ( y ) {

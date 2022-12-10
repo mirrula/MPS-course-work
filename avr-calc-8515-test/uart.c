@@ -7,8 +7,8 @@
 void UsartInit()
 {
 	UBRRL=25;                  				//1 000 000 / (2400 * 16) - 1 = 25
-  	UCSRB=(1<<TXEN);              			//?ac?aoaai ia?aaa?o
-  	UCSRC=(1<<URSEL)|(1<<UCSZ0|(1<<UCSZ1));   //?a?ei ?aaiou 8 aeo
+  	UCSRB=(1<<TXEN);              			
+  	UCSRC=(1<<URSEL)|(1<<UCSZ0|(1<<UCSZ1));   
 }
 
 void Transmit(char* data)

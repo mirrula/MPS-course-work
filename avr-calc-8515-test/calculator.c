@@ -38,10 +38,29 @@ void init_calculator() {
     run();
 }
 
-void uart() {
-	char uart_ans[64];
-	dtostrf(ans, 9, 5, uart_ans);	//float -> char* (ans -> uart_ans)
-	Transmit(uart_ans);
+void reset() {
+    clear();
+    move_to(0, 0);		//начало верхней строки
+    r = a = b = op = count = 0;
+	state = start_disp;
+}
+
+void run() {
+	bool *is_dec_p;
+	bool is_decimal = 0;		//флаг (0 - целая часть, 1 - дробная)
+	is_dec_p = &is_decimal;
+
+	int *paw_p;
+	int paw = 1;				//разряд после запятой
+	paw_p = &paw;
+
+    while (1) {
+        decide(scan_key(), is_dec_p, paw_p);
+    }
+}
+
+void send_digit(unsigned char digit) {
+    send_data(digit + '0');
 }
 
 double calculate(float m, char operator, float n) {
@@ -79,29 +98,10 @@ void show_result() {
     state = result_disp;
 }
 
-void send_digit(unsigned char digit) {
-    send_data(digit + '0');
-}
-
-void run() {
-	bool *is_dec_p;
-	bool is_decimal = 0;		//флаг (0 - целая часть, 1 - дробная)
-	is_dec_p = &is_decimal;
-
-	int *paw_p;
-	int paw = 1;				//разряд после запятой
-	paw_p = &paw;
-
-    while (1) {
-        decide(scan_key(), is_dec_p, paw_p);
-    }
-}
-
-void reset() {
-    clear();
-    move_to(0, 0);		//начало верхней строки
-    r = a = b = op = count = 0;
-	state = start_disp;
+void uart() {
+	char uart_ans[64];
+	dtostrf(ans, 9, 5, uart_ans);	//float -> char* (ans -> uart_ans)
+	Transmit(uart_ans);
 }
 
 void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
@@ -171,7 +171,7 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
                 line[0] = ' ';
                 line[1] = ' ';
 
-                move_to(0, 0);					//начало верхней строки
+                move_to(0, 0);					// top string
                 send_string(line); 				// Clear 1st line.
 
                 move_to(0, 0);
@@ -255,11 +255,6 @@ void decide(unsigned char key, bool* is_dec_p, int* paw_p) {
 			send_data('A');
 			b = ans;
 			state = b_input;
-            break;
-
-        case 'D': // "DEL" button.
-			move_to(-1,0);
-			send_data(' ');
             break;
 
 		case 'O':// "ON/OFF" button.
